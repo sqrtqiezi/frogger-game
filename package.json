@@ -1,0 +1,14 @@
+{
+  "name": "frogger-game",
+  "version": "1.0.0",
+  "description": "前端纳米学位街机游戏项目",
+  "main": "./src/index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4"
+  },
+  "scripts": {},
+  "author": "",
+  "license": "ISC"
+}
