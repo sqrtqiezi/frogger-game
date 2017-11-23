@@ -4,6 +4,7 @@ import resources from './resources'
 
 class Game {
   constructor () {
+    this.status = 0 // 游戏执行状态：0 未开始；1 正在执行；2 游戏结束
     this.startTime = Date.now()
     this.allEnemies = [
     ]
@@ -45,7 +46,8 @@ class Game {
     }
   }
 
-  run () {
+  // 初始化游戏
+  init () {
     // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput()
     // 方法里面。你不需要再更改这段代码了。
     document.addEventListener('keyup', function (e) {
@@ -59,7 +61,7 @@ class Game {
     }.bind(this))
 
     /**
-     * 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
+     * 加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
      * 那么党这些图片都已经加载完毕的时候游戏就会开始。
      */
     resources.load([
@@ -70,6 +72,24 @@ class Game {
       'images/char-boy.png'
     ])
     resources.onReady(engine.init.bind(engine))
+  }
+
+  /**
+   * 游戏开始执行
+   */
+  start () {
+    this.status = 1
+  }
+
+  /**
+   * 游戏结束
+   */
+  end () {
+    this.status = 2
+  }
+
+  get isRunning () {
+    return this.status === 1
   }
 }
 

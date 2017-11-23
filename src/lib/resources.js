@@ -1,8 +1,8 @@
-/* Resources.js
+/**
+ * Resources.js
  * 这是一个简单的图片加载工具。他简化了图片加载的过程从而这些图片可以在你的游戏里面使用。
  * 这个工具还包含一个缓存层从而当你试图加载同一张图片多次的时候可以重复使用缓存的图片
  */
-
 class Resources {
   constructor () {
     this.resourceCache = {}
@@ -47,8 +47,8 @@ class Resources {
    * @returns {boolean}
    */
   isReady () {
-    var ready = true
-    for (var k in this.resourceCache) {
+    let ready = true
+    for (const k in this.resourceCache) {
       if (this.resourceCache.hasOwnProperty(k) &&
         !this.resourceCache[k]) {
         ready = false
@@ -82,7 +82,7 @@ class Resources {
     } else {
       /* 否则， 这个 URL 之前没被加载过而且在缓存里面不存在，那么我们得加载这张图片
        */
-      var img = new window.Image()
+      const img = new window.Image()
       img.onload = function () {
         /* 一旦我们的图片已经被加载了，就把它放进我们的缓存，然后我们在开发者试图
          * 在未来再次加载这个图片的时候我们就可以简单的返回即可。

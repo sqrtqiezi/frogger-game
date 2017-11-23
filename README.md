@@ -2,6 +2,17 @@
 前端纳米学位街机游戏项目
 ===============================
 
-学生应该用这个[评审标准](https://review.udacity.com/#!/rubrics/499/view))来自我检查自己提交的代码。 确认自己写的函数要是**面向对象的** -  要么是类函数（就像函数 Player 和 Enemy）要么是类的原型链上的函数比如 Enemy.prototype.checkCollisions ， 在类函数里面或者类的原型链函数里面适当的使用关键词 'this' 来引用调用该函数的对象实例。最后保证你的**readme.md**文件要写明关于如何运行和如何玩你的街机游戏的指引。
+[评审标准](https://review.udacity.com/#!/rubrics/499/view)
 
-关于如何开始这个项目的更详细的指导，可以查阅这份[指南](https://gdgdocs.org/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true)。
+项目主要代码在 **/src/lib** 目录下:
+
+* game.js 暴露 game 对象，实现游戏的运行逻辑；
+* engine.js 暴露 engine 对象，实现游戏的渲染逻辑；
+* resources.js 暴露 resources 对象，图片资源到加载与缓存；
+* entities.js 暴露游戏实体类，游戏实体类都是 Entity 类的子类，需要实现 update 和 render 方法。实体类包括：
+  * Enemy 敌人
+  * Player 游戏玩家
+  * Rock 石头，障碍物
+  * Gem 宝石，Blue 100 分，Green 200 分，Yellow 300 分
+  * Heart 红心，为玩家加一条生命
+  * Key 钥匙，清空全场敌人
