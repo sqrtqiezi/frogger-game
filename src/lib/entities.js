@@ -1,5 +1,15 @@
 import engine from './engine'
+import game from './game'
 import resources from './resources'
+
+const COORDS = [
+  63, 146, 229, 312, 395
+]
+
+// 随机获取实体初始化 y 坐标
+function _getCoord () {
+  return COORDS[Math.floor(Math.random() * 10) % COORDS.length]
+}
 
 /**
  * 游戏实体
@@ -31,10 +41,7 @@ class Enemy extends Entity {
     super()
     this.sprite = 'images/enemy-bug.png'
     this.x = -100
-    const coords = [
-      63, 146, 229, 312, 395
-    ]
-    this.y = coords[Math.floor(Math.random() * 10) % coords.length]
+    this.y = _getCoord()
   }
 
   /**
@@ -42,13 +49,68 @@ class Enemy extends Entity {
    * @param dt ，表示时间间隙
    */
   update (dt) {
-    // console.log(dt)
     this.x += dt * 150
   }
 }
 
 /**
- * 玩家类
+ * 宝石💎
+ */
+class Gem extends Entity {
+  constructor () {
+    const TYPES = [
+      'images/gem-blue.png',
+      'images/gem-green.png',
+      'images/gem-orange.png'
+    ]
+    const index = Math.floor(Math.random() * 10) % TYPES.length
+    console.log(index)
+    super()
+    this.x = -103
+    this.y = _getCoord() - 10
+    this.score = (index + 1) * 100
+    this.sprite = TYPES[index]
+  }
+}
+
+/**
+ * 岩石
+ */
+class Rock extends Entity {
+  constructor () {
+    super()
+    this.sprite = 'images/rock.png'
+    this.x = -103
+    this.y = _getCoord()
+  }
+}
+
+/**
+ * 钥匙🔑
+ */
+class Key extends Entity {
+  constructor () {
+    super()
+    this.sprite = 'images/key.png'
+    this.x = -103
+    this.y = _getCoord()
+  }
+}
+
+/**
+ * 红心♥️
+ */
+class Heart extends Entity {
+  constructor () {
+    super()
+    this.sprite = 'images/heart.png'
+    this.x = -103
+    this.y = _getCoord()
+  }
+}
+
+/**
+ * 玩家
  */
 class Player extends Entity {
   constructor () {
@@ -61,13 +123,33 @@ class Player extends Entity {
   }
 
   handleInput (direction) {
+    // 检测是否与岩石碰撞
+    function _checkRocksCollision (px, py) {
+      for (const rock of game.allRocks) {
+        if (game.checkCollision(px, py, rock.x, rock.y)) {
+          return true
+        }
+      }
+      return false
+    }
+
     if (direction === 'left' && this.x > 0) {
-      this.x -= this.xPace
+      // 要撞到岩石的话，不移动
+      if (_checkRocksCollision(this.x - this.xPace, this.y)) return
+      if (this.x > 202) {
+        this.x -= this.xPace
+      } else {
+        // 玩家在地图中间向左移动时，地图向右滚动
+        game.rollMap()
+      }
     } else if (direction === 'right' && this.x < 400) {
+      if (_checkRocksCollision(this.x + this.xPace, this.y)) return
       this.x += this.xPace
     } else if (direction === 'up' && this.y > 0) {
+      if (_checkRocksCollision(this.x, this.y - this.yPace)) return
       this.y -= this.yPace
     } else if (direction === 'down' && this.y < 400) {
+      if (_checkRocksCollision(this.x, this.y + this.yPace)) return
       this.y += this.yPace
     }
   }
@@ -79,5 +161,5 @@ class Player extends Entity {
 }
 
 export {
-  Enemy, Player
+  Entity, Enemy, Player, Gem, Rock, Key, Heart
 }

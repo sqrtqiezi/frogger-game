@@ -92,8 +92,18 @@ class Engine {
    */
   renderEntities () {
     game.player.render()
-
-    /* 遍历在 allEnemies 数组中存放的作于对象然后调用你事先定义的 render 函数 */
+    game.allGems.forEach(gem => {
+      gem.render()
+    })
+    if (game.heart !== null) {
+      game.heart.render()
+    }
+    if (game.key !== null) {
+      game.key.render()
+    }
+    game.allRocks.forEach(rock => {
+      rock.render()
+    })
     game.allEnemies.forEach(function (enemy) {
       enemy.render()
     })
