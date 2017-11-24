@@ -3,10 +3,15 @@ body {
   justify-content: center;
 }
 
+canvas {
+  height: 606px;
+  margin-top: 50px;
+}
+
 .panel {
   width: 180px;
-  height: 606px;
-  padding-top: 35px;
+  height: 656px;
+  padding-top: 85px;
 }
 
 .btn-start {
@@ -34,4 +39,12 @@ body {
 
 .btn-start.disabled {
   background-color: #6FC6FF;
+}
+
+.ui.message {
+  top: 0;
+  margin-left: -100px;
+  position: fixed;
+  min-width: 100px;
+  display: none;
 }

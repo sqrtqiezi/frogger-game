@@ -1,6 +1,7 @@
 import { Entity, Enemy, Player, Gem, Rock, Key, Heart } from './entities'
 import engine from './engine'
 import resources from './resources'
+import $ from 'jquery'
 
 class Game {
   constructor () {
@@ -78,12 +79,12 @@ class Game {
     }
 
     // 随机出现🔑
-    if (this.key === null && Math.floor(Math.random() * 100) % 11 === 0) {
+    if (this.key === null && Math.floor(Math.random() * 100) % 13 === 0) {
       this.key = new Key()
     }
 
     // 随机出现红心
-    if (this.heart === null && Math.floor(Math.random() * 100) % 13 === 0) {
+    if (this.heart === null && Math.floor(Math.random() * 100) % 19 === 0) {
       this.heart = new Heart()
     }
   }
@@ -102,21 +103,22 @@ class Game {
    * 碰撞检测
    */
   checkCollisions () {
-    // 玩家跳河啦！
     if (this.player.y < 73) {
+      this.showError('擦，跳河了')
+      this.lives--
       this.reset()
     }
 
     this.allEnemies.forEach(item => {
       if (this.checkCollision(this.player.x, this.player.y, item.x, item.y)) {
-        // 玩家出车祸啦！
+        this.showError('擦，出车祸了')
+        this.lives--
         this.reset()
       }
     })
 
     this.allGems.forEach((item, index) => {
       if (this.checkCollision(this.player.x, this.player.y, item.x, item.y)) {
-        // 哇塞，捡到宝石了！
         this.pickGem(index)
       }
     })
@@ -125,6 +127,7 @@ class Game {
       if (this.checkCollision(this.player.x, this.player.y, this.key.x, this.key.y)) {
         this.allEnemies = []
         this.key = null
+        this.showPositive('释放大招')
       }
     }
 
@@ -132,7 +135,7 @@ class Game {
       if (this.checkCollision(this.player.x, this.player.y, this.heart.x, this.heart.y)) {
         this.lives++
         this.heart = null
-        console.log(`生命加一：${this.lives}`)
+        this.showPositive('生命加一')
       }
     }
   }
@@ -149,25 +152,31 @@ class Game {
    * @param index
    */
   pickGem (index) {
-    this.score += this.allGems[index].score
+    let score = this.allGems[index].score
+    this.score += score
     this.allGems.splice(index, 1)
-    console.log(this.score)
+    this.showPositive(`捡到宝石，增加 ${score} 分`)
+  }
+
+  showPositive (content) {
+    this._showMessage(content, 'positive')
+  }
+
+  showError (content) {
+    this._showMessage(content, 'error')
+  }
+
+  _showMessage (content, type) {
+    $(`.ui.${type}.message`).show(function () {
+      $(`.ui.${type}.message > p`).text(content)
+      setTimeout(() => {
+        $(this).hide()
+      }, 2000)
+    })
   }
 
   // 初始化游戏
   init () {
-    // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput()
-    // 方法里面。你不需要再更改这段代码了。
-    document.addEventListener('keyup', function (e) {
-      const allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down'
-      }
-      this.player.handleInput(allowedKeys[e.keyCode])
-    }.bind(this))
-
     /**
      * 加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
      * 那么当这些图片都已经加载完毕的时候游戏就会开始。
@@ -186,6 +195,27 @@ class Game {
       'images/key.png'
     ])
     resources.onReady(engine.init.bind(engine))
+
+    // 绑定游戏按键
+    resources.onReady(() => {
+      // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput()
+      // 方法里面。你不需要再更改这段代码了。
+      document.addEventListener('keyup', e => {
+        const allowedKeys = {
+          37: 'left',
+          38: 'up',
+          39: 'right',
+          40: 'down'
+        }
+        this.player.handleInput(allowedKeys[e.keyCode])
+      })
+
+      // 开始
+      $('.btn-start').one('click', () => {
+        this.start()
+        $('.btn-start').addClass('disabled')
+      })
+    })
   }
 
   /**
@@ -211,6 +241,4 @@ class Game {
   }
 }
 
-const game = new Game()
-
-export default game
+export default new Game()
