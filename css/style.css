@@ -43,7 +43,8 @@ canvas {
   display: inline-block;
 }
 
-.ui.grid.panel .char.value img {
+.ui.grid.panel .char.value img,
+.ui.char-change.modal img {
   width: 100px;
   height: 100px;
   object-fit: cover;

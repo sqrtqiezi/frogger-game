@@ -4,6 +4,9 @@ import resources from './resources'
 import $ from 'jquery'
 import moment from 'moment'
 
+/**
+ * Game 类，实现全部游戏逻辑
+ */
 class Game {
   constructor () {
     this.status = 0 // 游戏执行状态：0 未开始；1 正在执行；2 游戏结束
@@ -208,14 +211,28 @@ class Game {
     $('.panel .char.value img').attr('src', this.player.sprite)
   }
 
+  /**
+   * 显示奖励消息
+   * @param content
+   */
   showPositive (content) {
     this._showMessage(content, 'positive')
   }
 
+  /**
+   * 显示惩罚消息
+   * @param content
+   */
   showError (content) {
     this._showMessage(content, 'error')
   }
 
+  /**
+   * 显示消息
+   * @param content
+   * @param type
+   * @private
+   */
   _showMessage (content, type) {
     $(`.ui.${type}.message`).show(function () {
       $(`.ui.${type}.message > p`).text(content)
@@ -226,7 +243,7 @@ class Game {
   }
 
   /**
-   * 游戏开始执行
+   * 游戏开始
    */
   start () {
     this.status = 1
@@ -234,10 +251,33 @@ class Game {
   }
 
   /**
+   * 游戏重新开始
+   */
+  restart () {
+    this.lives = 3
+    this.score = 0
+    this.status = 1
+    this.startTime = Date.now()
+    this.reset()
+  }
+
+  /**
    * 游戏结束
    */
   end () {
-    console.log('游戏结束')
+    const self = this
+
+    $('.ui.game-over.modal .time.value').text(this.duration)
+    $('.ui.game-over.modal .score.value').text(this.score)
+
+    $('.ui.game-over.modal').modal({
+      closable: false,
+      onApprove () {
+        self.restart()
+      }
+    }).modal('show')
+
+    this.endTime = Date.now()
     setTimeout(() => {
       this.status = 2
     }, 0)
@@ -283,6 +323,15 @@ class Game {
    * 初始化游戏
    */
   init () {
+    this.loadResources()
+    this.initController()
+    this.initPanel()
+  }
+
+  /**
+   * 加载游戏资源
+   */
+  loadResources () {
     /**
      * 加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
      * 那么当这些图片都已经加载完毕的时候游戏就会开始。
@@ -304,12 +353,17 @@ class Game {
       'images/heart.png',
       'images/key.png'
     ])
+    // 资源加载完成之后，初始化游戏引擎
     resources.onReady(engine.init.bind(engine))
+  }
 
+  /**
+   * 初始化游戏控制
+   */
+  initController () {
     // 绑定游戏按键
     resources.onReady(() => {
-      // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput()
-      // 方法里面。你不需要再更改这段代码了。
+      // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput() 方法里面
       document.addEventListener('keyup', e => {
         const allowedKeys = {
           37: 'left',
@@ -320,17 +374,22 @@ class Game {
         this.player.handleInput(allowedKeys[e.keyCode])
       })
 
-      // 开始
+      // 「游戏开始」按钮
       $('.btn-start').one('click', () => {
         this.start()
         $('.btn-start').addClass('disabled')
       })
     })
+  }
 
+  /**
+   * 初始化显示面板
+   */
+  initPanel () {
     // 初始化控制面板
     $('.btn-change-char').popup()
     $('.btn-change-char').click(() => {
-      $('.ui.chars.modal').modal('show')
+      $('.ui.char-change.modal').modal('show')
     })
 
     // 初始化角色选择弹窗
@@ -342,13 +401,13 @@ class Game {
         </a>
       </div>`)
     }
-    $('.ui.chars.modal .image.content').html(htmlChars.join(''))
+    $('.ui.char-change.modal .image.content').html(htmlChars.join(''))
 
     const self = this
-    $('.ui.chars.modal .btn-char').click(function () {
+    $('.ui.char-change.modal .btn-char').click(function () {
       self.player.sprite = $(this).data('sprite')
       self.renderPanel()
-      $('.ui.chars.modal').modal('hide')
+      $('.ui.char-change.modal').modal('hide')
     })
   }
 }
