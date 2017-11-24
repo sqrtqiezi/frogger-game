@@ -8,10 +8,46 @@ canvas {
   margin-top: 50px;
 }
 
-.panel {
-  width: 180px;
+.ui.grid.panel {
+  display: flex;
+  flex-direction: column;
+  width: 215px;
   height: 656px;
-  padding-top: 85px;
+  padding-top: 100px;
+  margin-left: 30px;
+}
+
+.ui.grid.panel div.value {
+  width: 100%;
+  padding: 1em 0px;
+  min-height: 40px;
+  text-align: center;
+  font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.ui.grid.panel .lives.value {
+  color: red;
+  min-height: 60px;
+  padding: 1.5em 0px;
+  font-size: 1rem;
+  text-align: left;
+}
+
+/*.ui.grid.panel .char.value {*/
+  /*padding: 0px;*/
+/*}*/
+
+.ui.grid.panel .char.value a {
+  display: inline-block;
+}
+
+.ui.grid.panel .char.value img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  object-position: 100% calc(100% + 10px);
 }
 
 .btn-start {

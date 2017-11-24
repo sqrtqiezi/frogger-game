@@ -3,24 +3,59 @@
 <head>
   <meta charset="utf-8">
   <title>Effective JavaScript: Frogger</title>
+  <!--<link rel="stylesheet prefetch" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">-->
   <link rel="stylesheet prefetch" href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css">
   <link rel="stylesheet prefetch" href="https://cdn.bootcss.com/semantic-ui/2.2.13/semantic.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<canvas width="505" height="606"></canvas>
+
+<div class="ui one column grid panel">
+  <div class="column">
+    <div class="ui raised segment">
+      <a class="ui blue ribbon label">时间</a>
+      <div class="time value">
+        00:00:00
+      </div>
+      <a class="ui orange ribbon label">得分</a>
+      <div class="scores value">0</div>
+      <a class="ui red ribbon label">生命</a>
+      <div class="lives value">
+        <i class="heart icon"></i>
+        <i class="heart icon"></i>
+      </div>
+      <a class="ui green ribbon label">角色</a>
+      <div class="char value">
+        <a href="#" class="btn-change-char" data-tooltip="点击可以更换游戏角色" data-position="top center" data-inverted>
+          <img src="images/char-boy.png" alt="">
+        </a>
+      </div>
+    </div>
+    <a href="#" class="btn-start">开始游戏</a>
+  </div>
+</div>
+
+
 <div class="ui error message animated bounceInDown">
   <p></p>
 </div>
 <div class="ui positive message animated bounceInDown">
   <p></p>
 </div>
-<canvas width="505" height="606"></canvas>
+<div class="ui basic chars modal">
+  <i class="close icon"></i>
+  <div class="header">
+    更换角色
+  </div>
+  <div class="image content">
 
-<div class="panel">
-  <a href="javascript:;" class="btn-start">开始游戏</a>
+  </div>
 </div>
 
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.19.0/moment.min.js"></script>
+<script src="https://cdn.bootcss.com/semantic-ui/2.2.13/semantic.min.js"></script>
 <script src="dist/bundle.js"></script>
 </body>
 </html>

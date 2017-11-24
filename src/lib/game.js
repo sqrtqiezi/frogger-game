@@ -2,11 +2,14 @@ import { Entity, Enemy, Player, Gem, Rock, Key, Heart } from './entities'
 import engine from './engine'
 import resources from './resources'
 import $ from 'jquery'
+import moment from 'moment'
 
 class Game {
   constructor () {
     this.status = 0 // 游戏执行状态：0 未开始；1 正在执行；2 游戏结束
-    this.startTime = Date.now()
+    this.startTime = null
+    this.endTime = null
+    this.bugTime = Date.now()
     this.allEnemies = []
     this.allGems = []
     this.allRocks = []
@@ -22,8 +25,9 @@ class Game {
    */
   update () {
     // 每秒钟新增一只🐞
-    if ((Date.now() - this.startTime) > 1000) {
-      this.startTime = Date.now()
+    const now = Date.now()
+    if (now - this.bugTime > 1000) {
+      this.bugTime = Date.now()
       this.allEnemies.push(new Enemy())
     }
 
@@ -84,7 +88,7 @@ class Game {
     }
 
     // 随机出现红心
-    if (this.heart === null && Math.floor(Math.random() * 100) % 19 === 0) {
+    if (this.heart === null && Math.floor(Math.random() * 100) % 17 === 0) {
       this.heart = new Heart()
     }
   }
@@ -105,15 +109,13 @@ class Game {
   checkCollisions () {
     if (this.player.y < 73) {
       this.showError('擦，跳河了')
-      this.lives--
-      this.reset()
+      this.subtractLife()
     }
 
     this.allEnemies.forEach(item => {
       if (this.checkCollision(this.player.x, this.player.y, item.x, item.y)) {
         this.showError('擦，出车祸了')
-        this.lives--
-        this.reset()
+        this.subtractLife()
       }
     })
 
@@ -125,23 +127,19 @@ class Game {
 
     if (this.key !== null) {
       if (this.checkCollision(this.player.x, this.player.y, this.key.x, this.key.y)) {
-        this.allEnemies = []
-        this.key = null
-        this.showPositive('释放大招')
+        this.pickKey()
       }
     }
 
     if (this.heart !== null) {
       if (this.checkCollision(this.player.x, this.player.y, this.heart.x, this.heart.y)) {
-        this.lives++
-        this.heart = null
-        this.showPositive('生命加一')
+        this.pickHeart()
       }
     }
   }
 
   /**
-   * 检测逻辑
+   * 碰撞检测逻辑
    */
   checkCollision (px, py, ex, ey) {
     return (Math.abs(px - ex) < 60 && Math.abs(py - ey) < 60)
@@ -156,6 +154,58 @@ class Game {
     this.score += score
     this.allGems.splice(index, 1)
     this.showPositive(`捡到宝石，增加 ${score} 分`)
+  }
+
+  /**
+   * 拾取钥匙
+   */
+  pickKey () {
+    this.allEnemies = []
+    this.key = null
+    this.showPositive('释放大招')
+  }
+
+  /**
+   * 拾取红心
+   */
+  pickHeart () {
+    this.lives++
+    this.heart = null
+    this.showPositive('生命加一')
+  }
+
+  /**
+   * 生命值减一
+   */
+  subtractLife () {
+    this.lives--
+    this.reset()
+    if (this.lives < 1) {
+      // 游戏结束
+      this.end()
+    }
+  }
+
+  /**
+   * 渲染游戏控制面板
+   */
+  renderPanel () {
+    $('.panel .time.value').text(this.duration)
+    $('.panel .scores.value').text(this.score)
+
+    let htmlLives
+    if (this.lives > 0) {
+      htmlLives = []
+      for (let i = 0; i < this.lives; i++) {
+        htmlLives.push('<i class="heart icon"></i>')
+      }
+      htmlLives = htmlLives.join('')
+    } else {
+      htmlLives = '<span>Game Over</span>'
+    }
+    $('.panel .lives.value').html(htmlLives)
+
+    $('.panel .char.value img').attr('src', this.player.sprite)
   }
 
   showPositive (content) {
@@ -175,7 +225,63 @@ class Game {
     })
   }
 
-  // 初始化游戏
+  /**
+   * 游戏开始执行
+   */
+  start () {
+    this.status = 1
+    this.startTime = Date.now()
+  }
+
+  /**
+   * 游戏结束
+   */
+  end () {
+    console.log('游戏结束')
+    setTimeout(() => {
+      this.status = 2
+    }, 0)
+  }
+
+  /**
+   * 游戏是否已经运行？
+   * @returns {boolean}
+   */
+  get isRunning () {
+    return this.status === 1
+  }
+
+  /**
+   * 游戏运行时长
+   * @returns {*}
+   */
+  get duration () {
+    if (this.status === 0) {
+      return '00:00:00'
+    }
+    let duration
+    if (this.status === 1) {
+      duration = moment.duration(Date.now() - this.startTime)
+    } else { // status === 2 游戏结束
+      duration = moment.duration(this.endTime - this.startTime)
+    }
+    const hours = duration.get('hours')
+    const minutes = duration.get('minutes')
+    const seconds = duration.get('seconds')
+
+    function _prefix (num) {
+      if (num < 10) {
+        return `0${num}`
+      }
+      return `${num}`
+    }
+
+    return `${_prefix(hours)}:${_prefix(minutes)}:${_prefix(seconds)}`
+  }
+
+  /**
+   * 初始化游戏
+   */
   init () {
     /**
      * 加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
@@ -187,6 +293,10 @@ class Game {
       'images/grass-block.png',
       'images/enemy-bug.png',
       'images/char-boy.png',
+      'images/char-cat-girl.png',
+      'images/char-horn-girl.png',
+      'images/char-pink-girl.png',
+      'images/char-princess-girl.png',
       'images/gem-blue.png',
       'images/gem-green.png',
       'images/gem-orange.png',
@@ -216,28 +326,30 @@ class Game {
         $('.btn-start').addClass('disabled')
       })
     })
-  }
 
-  /**
-   * 游戏开始执行
-   */
-  start () {
-    this.status = 1
-  }
+    // 初始化控制面板
+    $('.btn-change-char').popup()
+    $('.btn-change-char').click(() => {
+      $('.ui.chars.modal').modal('show')
+    })
 
-  /**
-   * 游戏结束
-   */
-  end () {
-    this.status = 2
-  }
+    // 初始化角色选择弹窗
+    const htmlChars = []
+    for (const char of Player.sprites) {
+      htmlChars.push(`<div class="ui medium image">
+        <a href="#" class="btn-char" data-sprite="${char}">
+          <img src="${char}">
+        </a>
+      </div>`)
+    }
+    $('.ui.chars.modal .image.content').html(htmlChars.join(''))
 
-  /**
-   * 游戏是否已经运行？
-   * @returns {boolean}
-   */
-  get isRunning () {
-    return this.status === 1
+    const self = this
+    $('.ui.chars.modal .btn-char').click(function () {
+      self.player.sprite = $(this).data('sprite')
+      self.renderPanel()
+      $('.ui.chars.modal').modal('hide')
+    })
   }
 }
 

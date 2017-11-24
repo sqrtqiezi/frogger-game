@@ -64,7 +64,6 @@ class Gem extends Entity {
       'images/gem-orange.png'
     ]
     const index = Math.floor(Math.random() * 10) % TYPES.length
-    console.log(index)
     super()
     this.x = -103
     this.y = _getCoord() - 10
@@ -115,7 +114,7 @@ class Heart extends Entity {
 class Player extends Entity {
   constructor () {
     super()
-    this.sprite = 'images/char-boy.png'
+    this.sprite = Player.sprites[0]
     this.x = 202
     this.y = 405
     this.yPace = 83
@@ -123,7 +122,7 @@ class Player extends Entity {
   }
 
   handleInput (direction) {
-    // 检测是否与岩石碰撞
+    // 检测是否会与岩石碰撞
     function _checkRocksCollision (px, py) {
       for (const rock of game.allRocks) {
         if (game.checkCollision(px, py, rock.x, rock.y)) {
@@ -159,6 +158,13 @@ class Player extends Entity {
     this.y = 405
   }
 }
+
+Player.sprites = [
+  'images/char-boy.png',
+  'images/char-cat-girl.png',
+  'images/char-horn-girl.png',
+  'images/char-pink-girl.png',
+]
 
 export {
   Entity, Enemy, Player, Gem, Rock, Key, Heart

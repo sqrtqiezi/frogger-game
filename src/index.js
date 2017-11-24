@@ -1,5 +1,4 @@
 import game from './lib/game'
-import $ from 'jquery'
 
 // 初始化游戏
 game.init()

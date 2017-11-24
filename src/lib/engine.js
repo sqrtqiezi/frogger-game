@@ -85,6 +85,9 @@ class Engine {
         this.ctx.drawImage(resources.get(rowImages[row]), col * 101, row * 83)
       }
     }
+
+    // 渲染游戏 panel
+    game.renderPanel()
   }
 
   /**

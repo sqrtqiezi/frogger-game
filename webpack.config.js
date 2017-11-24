@@ -19,7 +19,8 @@ module.exports = {
     ]
   },
   externals: {
-    jquery: 'jQuery'
+    jquery: 'jQuery',
+    moment: 'moment'
   },
   plugins: [
     new UglifyJsPlugin()
