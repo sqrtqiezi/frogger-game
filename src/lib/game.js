@@ -111,13 +111,13 @@ class Game {
    */
   checkCollisions () {
     if (this.player.y < 73) {
-      this.showError('擦，跳河了')
+      this.showError('哎呀，跳河了')
       this.subtractLife()
     }
 
     this.allEnemies.forEach(item => {
       if (this.checkCollision(this.player.x, this.player.y, item.x, item.y)) {
-        this.showError('擦，出车祸了')
+        this.showError('哎呀，出车祸了')
         this.subtractLife()
       }
     })
